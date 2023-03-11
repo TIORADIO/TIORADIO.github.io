@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Formulario de contacto</title>
+	<style type="text/css">
+		body {
+			font-family: Helvetica, sans-serif;
+			font-size: 16px;
+			color: #141515;
+			margin: 0;
+			padding: 0;
+			background-color: #f2f2f2;
+		}
+
+		h1 {
+			font-size: 28px;
+			margin-top: 40px;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+
+		form {
+			margin: 0 auto;
+			max-width: 500px;
+			padding: 20px;
+			background-color: #ffffff;
+			box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.1);
+		}
+
+		label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+
+		input[type="text"],
+		input[type="email"],
+		textarea {
+			display: block;
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #cccccc;
+			border-radius: 3px;
+			margin-bottom: 20px;
+			font-size: 16px;
+			color: #141515;
+			background-color: #ffffff;
+			transition: border-color 0.3s ease-in-out;
+			box-sizing: border-box;
+			font-family: Helvetica, sans-serif;
+		}
+
+		input[type="text"]:focus,
+		input[type="email"]:focus,
+		textarea:focus {
+			border-color: #4e95cf;
+			outline: none;
+		}
+
+		input[type="submit"] {
+			display: inline-block;
+			padding: 10px 20px;
+			background-color: #4e95cf;
+			color: #ffffff;
+			font-size: 16px;
+			border: none;
+			border-radius: 3px;
+			cursor: pointer;
+			transition: background-color 0.3s ease-in-out;
+			font-family: Helvetica, sans-serif;
+		}
+
+		input[type="submit"]:hover {
+			background-color: #f0189;
+		}
+
+		.success {
+			color: green;
+			font-weight: bold;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+
+		.error {
+			color: red;
+			font-weight: bold;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<h1>Formulario de contacto</h1>
+	<form
+    action="https://formspree.io/f/meqwzagw"
+	      method="POST">
+		<label for="name">Nombre completo:</label>
+		<input type="text" id="name" name="name" placeholder="Escribe tu nombre aquí" required>
+
+		<label for="email">Correo electrónico:</label>
+		<input type="email" id="email" name="email" placeholder="Escribe tu correo aquí" required>
+
+		<label for="message">Mensaje:</label>
+		<textarea id="message" name="message" placeholder="Describe tu propuesta" required></textarea>
+
+		<input type="submit" value="Enviar">
+<div class="success" style="display:none">Enviado correctamente</div>
+<div class="error" style="display:none">Error al enviar</div>
+
+	</form>
+
+<!-- Aquí pega el código generado por Formspree -->
+<script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
+<script>
+  const form = document.getElementById('form');
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    window.formbutton.submitForm(form);
+  });
+</script>
+
+<!-- Aquí pega el código para mostrar el mensaje de éxito o error -->
+<script>
+  window.formbutton = window.formbutton || function() { (window.formbutton.q = window.formbutton.q || []).push(arguments); };
+  formbutton("create", {action: "https://formspree.io/f/meqwzagw"});
+  formbutton("setSubmitSelector", "#contact-form [type=submit]");
+  formbutton("setFormSelector", "#contact-form");
+  formbutton("setShowMessage", function(success, message) {
+    if (success) {
+      const successMessage = document.createElement('p');
+      successMessage.textContent = 'Enviado correctamente';
+      successMessage.classList.add('success');
+      form.insertAdjacentElement('beforeend', successMessage);
+    } else {
+      const errorMessage = document.createElement('p');
+      errorMessage.textContent = 'Error al enviar';
+      errorMessage.classList.add('error');
+      form.insertAdjacentElement('beforeend', errorMessage);
+    }
+  });
+</script>
+</body>
+</html>
