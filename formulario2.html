@@ -99,8 +99,9 @@ window.location.href = "https://tioradio.github.io/formulario2";
 	<h1>Formulario de contacto</h1>
 	<form
 	method="POST"
+	      onsubmit="enviarFormulario()"
     action="https://formspree.io/f/meqwzagw"
-	      onsubmit="enviarFormulario()" 
+	
 	>
 		<label for="name">Nombre completo:</label>
 		<input type="text" id="name" name="name" placeholder="Escribe tu nombre aquí" required>
