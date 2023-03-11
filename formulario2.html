@@ -2,11 +2,9 @@
 <html>
 <head>
 	<script>
-		function enviarFormulario(event) {
-  event.preventDefault(); /
-  https://tioradio.github.io/formulario2";function enviarFormulario(event) {
-  event.preventDefault(); // Evita que el formulario se envíe automáticamente
-  
+function enviarFormulario() {
+
+window.location.href = "https://tioradio.github.io/formulario2";
 }
 </script>
 	<title>Formulario de contacto</title>
@@ -99,12 +97,10 @@
 </head>
 <body>
 	<h1>Formulario de contacto</h1>
-	<form onsubmit="enviarFormulario(event)">
-	method="POST"
-	      onsubmit="enviarFormulario()"
+	<form
     action="https://formspree.io/f/meqwzagw"
-	
-	>
+	      onsubmit="enviarFormulario()" 
+	      method="POST">
 		<label for="name">Nombre completo:</label>
 		<input type="text" id="name" name="name" placeholder="Escribe tu nombre aquí" required>
 
