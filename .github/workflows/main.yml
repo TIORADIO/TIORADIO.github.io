@@ -1,61 +1,37 @@
-name: Generar y publicar noticia
+name: Crear noticia
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+    
+env:
+  REPO_NAME: nombre-de-tu-repositorio
+  BRANCH_NAME: main
 
 jobs:
-  generar_noticia:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v2
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ env.BRANCH_NAME }}
 
-      - name: Leer datos del archivo .env
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "REPO_NAME=${{ secrets.REPO_NAME }}" >> $GITHUB_ENV
-          echo "BRANCH_NAME=${{ secrets.BRANCH_NAME }}" >> $GITHUB_ENV
+    - name: Copy plantilla.html
+      run: cp plantilla/plantilla.html noticias/${{ github.event.head_commit.id }}.html
 
-      - name: Instalar dependencias
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y curl sed
+    - name: Modificar el archivo
+      run: |
+        sed -i "s/Fecha de la noticia/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<fecha>).*(?=<\/fecha>)')/" noticias/${{ github.event.head_commit.id }}.html
+        sed -i "s/Título de la noticia/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<titulo>).*(?=<\/titulo>)')/" noticias/${{ github.event.head_commit.id }}.html
+        sed -i "s/Género de la noticia/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<genero>).*(?=<\/genero>)')/" noticias/${{ github.event.head_commit.id }}.html
+        sed -i "s/Autor de la noticia/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<autor>).*(?=<\/autor>)')/" noticias/${{ github.event.head_commit.id }}.html
+        sed -i "s/noticia aquí/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<contenido>).*(?=<\/contenido>)')/" noticias/${{ github.event.head_commit.id }}.html
 
-      - name: Reemplazar contenido de plantilla con datos del archivo subido
-        run: |
-          sed -i "s/Fecha de la noticia/$(cat generador/event.json | grep -oP '(?<=<fecha>).*(?=<\/fecha>)')/" noticias/event.html
-          sed -i "s/Título de la noticia/$(cat generador/event.json | grep -oP '(?<=<titulo>).*(?=<\/titulo>)')/" noticias/event.html
-          sed -i "s/Género de la noticia/$(cat generador/event.json | grep -oP '(?<=<genero>).*(?=<\/genero>)')/" noticias/event.html
-          sed -i "s/Autor de la noticia/$(cat generador/event.json | grep -oP '(?<=<autor>).*(?=<\/autor>)')/" noticias/event.html
-          sed -i "s/noticia aquí/$(cat generador/event.json | grep -oP '(?<=<contenido>).*(?=<\/contenido>)')/" noticias/event.html
-
-      - name: Crear rama y cargar noticias/event.html
-        env:
-          EVENT_FILENAME: ${{ env.EVENT_FILENAME }}
-          REPO_NAME: ${{ env.REPO_NAME }}
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git checkout -b $BRANCH_NAME
-          git add noticias/event.html
-          git commit -m "Agregar noticia $EVENT_FILENAME"
-          git push -f "https://${GITHUB_TOKEN}@github.com/${REPO_NAME}.git" $BRANCH_NAME
-          
-      - name: Abrir solicitud de extracción
-        env:
-          REPO_NAME: ${{ env.REPO_NAME }}
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: peter-evans/create-pull-request@v3.7.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: Agregar noticia ${{ env.EVENT_FILENAME }}
-          title: Agregar noticia ${{ env.EVENT_FILENAME }}
-          body: |
-            Nueva noticia agregada a la página.
-          branch: $BRANCH_NAME
-          base: main
-          labels: noticias
+    - name: Push cambios al repositorio
+      uses: ad-m/github-push-action@master
+      with:
+        branch: ${{ env.BRANCH_NAME }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ env.REPO_NAME }}
