@@ -21,13 +21,11 @@ jobs:
       - name: Leer nombre del archivo
         id: filename
         run: echo "::set-output name=filename::$(echo ${{ github.event_path }} | awk -F'/' '{print $NF}')"
-
 - name: Chequear si existe el directorio noticias
   run: |
     if [ ! -d "noticias" ]; then
       mkdir noticias
     fi
-    
 - name: Copiar plantilla a la carpeta noticias
   run: |
     cp plantilla/plantilla.html noticias/
