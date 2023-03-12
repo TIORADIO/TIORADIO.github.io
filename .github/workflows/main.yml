@@ -1,37 +1,48 @@
-name: Crear noticia
+name: Generador de noticias
 
 on:
   push:
-    branches: [ main ]
-    
+    branches:
+      - main
+  pull_request:
+
 env:
-  REPO_NAME: nombre-de-tu-repositorio
+  REPO_NAME: TIORADIO.github.io
   BRANCH_NAME: main
 
 jobs:
-  build:
+  generador_noticias:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repo
       uses: actions/checkout@v2
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-        ref: ${{ env.BRANCH_NAME }}
-
-    - name: Copy plantilla.html
-      run: cp plantilla/plantilla.html noticias/${{ github.event.head_commit.id }}.html
-
-    - name: Modificar el archivo
+        node-version: '14'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Create news file from template
+      env:
+        NEWS_FILE: ${{ github.event.head_commit.added | grep -m1 .html }}
       run: |
-        sed -i "s/Fecha de la noticia/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<fecha>).*(?=<\/fecha>)')/" noticias/${{ github.event.head_commit.id }}.html
-        sed -i "s/Título de la noticia/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<titulo>).*(?=<\/titulo>)')/" noticias/${{ github.event.head_commit.id }}.html
-        sed -i "s/Género de la noticia/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<genero>).*(?=<\/genero>)')/" noticias/${{ github.event.head_commit.id }}.html
-        sed -i "s/Autor de la noticia/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<autor>).*(?=<\/autor>)')/" noticias/${{ github.event.head_commit.id }}.html
-        sed -i "s/noticia aquí/$(cat generador/${{ github.event.head_commit.added | grep -m1 .html }} | grep -oP '(?<=<contenido>).*(?=<\/contenido>)')/" noticias/${{ github.event.head_commit.id }}.html
-
-    - name: Push cambios al repositorio
-      uses: ad-m/github-push-action@master
-      with:
-        branch: ${{ env.BRANCH_NAME }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        repository: ${{ env.REPO_NAME }}
+        mkdir -p noticias/
+        cp plantilla/plantilla.html noticias/"${NEWS_FILE}"
+        sed -i "s/Fecha de la noticia/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<fecha>).*(?=<\/fecha>)')/" noticias/"${NEWS_FILE}"
+        sed -i "s/Título de la noticia/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<titulo>).*(?=<\/titulo>)')/" noticias/"${NEWS_FILE}"
+        sed -i "s/Género de la noticia/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<genero>).*(?=<\/genero>)')/" noticias/"${NEWS_FILE}"
+        sed -i "s/Autor de la noticia/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<autor>).*(?=<\/autor>)')/" noticias/"${NEWS_FILE}"
+        sed -i "s/noticia aquí/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<contenido>).*(?=<\/contenido>)')/" noticias/"${NEWS_FILE}"
+      
+    - name: Add, commit and push changes
+      run: |
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+        git add noticias/
+        git commit -m "Add new news file"
+        git push origin $BRANCH_NAME
