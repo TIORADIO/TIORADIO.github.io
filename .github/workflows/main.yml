@@ -1,47 +1,41 @@
-name: Generar noticia
+name: Generar Noticias
 
 on:
   push:
-    branches: [ main ]
-    paths:
-    - 'generador/*.html'
-  
+    branches:
+      - main
+
 jobs:
-  generar_noticia:
+  generar-noticias:
     runs-on: ubuntu-latest
-    env:
-      TEMPLATE_PATH: 'plantilla/plantilla.html'
-      NOTICIAS_PATH: 'noticias'
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v2-beta
-      with:
-        node-version: '16.x'
-      
-    - name: Install dependencies
-      run: npm install
-      
-    - name: Create news file
-      run: |
-        NEW_FILE=$(echo ${{ github.event.head_commit.added }} | grep -m1 .html)
-        cp "${{ env.TEMPLATE_PATH }}" "${{ env.NOTICIAS_PATH }}/$NEW_FILE"
-        sed -i "s/Fecha de la noticia/$(grep -oP '(?<=<fecha>).*?(?=</fecha>)' ${{ env.NOTICIAS_PATH }}/$NEW_FILE)/g" "${{ env.NOTICIAS_PATH }}/$NEW_FILE"
-        sed -i "s/Título de la noticia/$(grep -oP '(?<=<titulo>).*?(?=</titulo>)' ${{ env.NOTICIAS_PATH }}/$NEW_FILE)/g" "${{ env.NOTICIAS_PATH }}/$NEW_FILE"
-        sed -i "s/Género de la noticia/$(grep -oP '(?<=<genero>).*?(?=</genero>)' ${{ env.NOTICIAS_PATH }}/$NEW_FILE)/g" "${{ env.NOTICIAS_PATH }}/$NEW_FILE"
-        sed -i "s/Autor de la noticia/$(grep -oP '(?<=<autor>).*?(?=</autor>)' ${{ env.NOTICIAS_PATH }}/$NEW_FILE)/g" "${{ env.NOTICIAS_PATH }}/$NEW_FILE"
-        sed -i "s/noticia aquí/$(grep -oP '(?<=<contenido>).*?(?=</contenido>)' ${{ env.NOTICIAS_PATH }}/$NEW_FILE)/g" "${{ env.NOTICIAS_PATH }}/$NEW_FILE"
-      
-    - name: Commit and push changes
-      run: |
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-        git add "${{ env.NOTICIAS_PATH }}/$NEW_FILE"
-        git commit -m "Agregada noticia $NEW_FILE"
-        git push
-      
-    - name: Cleanup
-      run: |
-        rm "${{ env.NOTICIAS_PATH }}/$NEW_FILE"
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install python3-pip
+          pip3 install -r requirements.txt
+      - name: Generate news
+        run: |
+          for file in "${GITHUB_WORKSPACE}"/generador/*.html
+          do
+            filename=$(basename -- "$file")
+            filename="${filename%.*}"
+            cp "${GITHUB_WORKSPACE}"/plantilla/plantilla.html "${GITHUB_WORKSPACE}"/noticias/"$filename".html
+            fecha=$(cat "$file" | grep -oP '(?<=<fecha>).*?(?=</fecha>)')
+            titulo=$(cat "$file" | grep -oP '(?<=<titulo>).*?(?=</titulo>)')
+            genero=$(cat "$file" | grep -oP '(?<=<genero>).*?(?=</genero>)')
+            autor=$(cat "$file" | grep -oP '(?<=<autor>).*?(?=</autor>)')
+            contenido=$(cat "$file" | grep -oP '(?<=<contenido>).*?(?=</contenido>)' | sed 's/\//\\\//g')
+            sed -i "s/Fecha de la noticia/$fecha/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
+            sed -i "s/Título de la noticia/$titulo/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
+            sed -i "s/Género de la noticia/$genero/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
+            sed -i "s/Autor de la noticia/$autor/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
+            sed -i "s/noticia aquí/$contenido/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
+            echo "Noticia generada para $filename.html"
+          done
+        shell: /usr/bin/bash -e
+        env:
+          pythonLocation: /opt/hostedtoolcache/Python/3.8.16/x64
+          LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.8.16/x64/lib
