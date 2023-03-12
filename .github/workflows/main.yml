@@ -22,14 +22,12 @@ jobs:
         id: filename
         run: echo "::set-output name=filename::$(echo ${{ github.event_path }} | awk -F'/' '{print $NF}')"
 
-# Chequear si existe el directorio noticias
 - name: Chequear si existe el directorio noticias
   run: |
     if [ ! -d "noticias" ]; then
       mkdir noticias
     fi
-
-# Nueva acción para copiar la plantilla a la carpeta noticias
+    
 - name: Copiar plantilla a la carpeta noticias
   run: |
     cp plantilla/plantilla.html noticias/
