@@ -1,4 +1,4 @@
-name: Generar Noticias
+name: Generar noticias
 
 on:
   push:
@@ -6,36 +6,37 @@ on:
       - main
 
 jobs:
-  generar-noticias:
+  generar_noticias:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install python3-pip
-          pip3 install -r requirements.txt
-      - name: Generate news
-        run: |
-          for file in "${GITHUB_WORKSPACE}"/generador/*.html
-          do
-            filename=$(basename -- "$file")
-            filename="${filename%.*}"
-            cp "${GITHUB_WORKSPACE}"/plantilla/plantilla.html "${GITHUB_WORKSPACE}"/noticias/"$filename".html
-            fecha=$(cat "$file" | grep -oP '(?<=<fecha>).*?(?=</fecha>)')
-            titulo=$(cat "$file" | grep -oP '(?<=<titulo>).*?(?=</titulo>)')
-            genero=$(cat "$file" | grep -oP '(?<=<genero>).*?(?=</genero>)')
-            autor=$(cat "$file" | grep -oP '(?<=<autor>).*?(?=</autor>)')
-            contenido=$(cat "$file" | grep -oP '(?<=<contenido>).*?(?=</contenido>)' | sed 's/\//\\\//g')
-            sed -i "s/Fecha de la noticia/$fecha/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
-            sed -i "s/Título de la noticia/$titulo/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
-            sed -i "s/Género de la noticia/$genero/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
-            sed -i "s/Autor de la noticia/$autor/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
-            sed -i "s/noticia aquí/$contenido/" "${GITHUB_WORKSPACE}"/noticias/"$filename".html
-            echo "Noticia generada para $filename.html"
-          done
-        shell: /usr/bin/bash -e
-        env:
-          pythonLocation: /opt/hostedtoolcache/Python/3.8.16/x64
-          LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.8.16/x64/lib
+    - name: Checkout del repositorio
+      uses: actions/checkout@v2
+
+    - name: Instalar paquetes de Python
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install python3-pip
+        pip3 install -r requirements.txt
+
+    - name: Generar noticias
+      run: |
+        for file in ${GITHUB_WORKSPACE}/generador/*.html
+        do
+          filename=$(basename -- "$file")
+          filename="${filename%.*}"
+          cp ${GITHUB_WORKSPACE}/plantilla/plantilla.html ${GITHUB_WORKSPACE}/noticias/"$filename".html
+          fecha=$(cat "$file" | grep -oP '(?<=<fecha>).*?(?=</fecha>)')
+          titulo=$(cat "$file" | grep -oP '(?<=<titulo>).*?(?=</titulo>)')
+          genero=$(cat "$file" | grep -oP '(?<=<genero>).*?(?=</genero>)')
+          autor=$(cat "$file" | grep -oP '(?<=<autor>).*?(?=</autor>)')
+          contenido=$(cat "$file" | grep -oP '(?<=<contenido>).*?(?=</contenido>)')
+          sed -i "s/Fecha de la noticia/$fecha/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+          sed -i "s/Título de la noticia/$titulo/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+          sed -i "s/Género de la noticia/$genero/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+          sed -i "s/Autor de la noticia/$autor/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+          sed -i "s/noticia aquí/$contenido/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+          echo "Noticia generada para $filename.html"
+        done
+      shell: /usr/bin/bash -e {0}
+      env:
+        pythonLocation: /usr/bin/python3
