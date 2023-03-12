@@ -1,21 +1,73 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Generador de noticiass</title>
-</head>
-<body>
-    <h1>Generador de noticias</h1>
-    <form action="generador.php" method="get" enctype="multipart/form-data">
-        <label for="texto">Escribe tu texto aquí:</label><br>
-        <input type="text" id="texto" name="texto"><br><br>
-
-        <label for="imagen">Subir imagen:</label><br>
-        <input type="file" id="imagen" name="imagen"><br><br>
-
-        <label for="fecha">Fecha:</label><br>
-        <input type="text" id="fecha" name="fecha"><br><br>
-
-        <input type="submit" name="submit" value="Enviar">
+  <head>
+    <meta charset="utf-8">
+    <title>Generador de noticias</title>
+  </head>
+  <body>
+    <form id="form-generador">
+      <label for="texto">Escribe tu texto aquí:</label>
+      <input type="text" id="texto" name="texto"><br>
+      <label for="fecha">Fecha:</label>
+      <input type="text" id="fecha" name="fecha"><br>
+      <label for="imagen">Subir imagen:</label>
+      <input type="file" id="imagen" name="imagen"><br>
+      <input type="submit" value="Enviar">
     </form>
-</body>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('#form-generador').submit(function(event) {
+          event.preventDefault();
+
+          var texto = $('#texto').val();
+          var fecha = $('#fecha').val();
+          var imagen = $('#imagen')[0].files[0];
+
+          // Crear carpeta en servidor
+          $.ajax({
+            url: 'crear_carpeta.php',
+            type: 'POST',
+            data: { fecha: fecha },
+            success: function() {
+              // Subir imagen al servidor
+              var formData = new FormData();
+              formData.append('imagen', imagen);
+              formData.append('fecha', fecha);
+
+              $.ajax({
+                url: 'subir_imagen.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function() {
+                  // Crear archivo HTML en carpeta
+                  var textoHtml = '<html><head><title>' + texto + '</title></head><body><h1>' + texto + '</h1><img src="noticias/' + fecha + '/imagen.jpg"></body></html>';
+                  $.ajax({
+                    url: 'crear_html.php',
+                    type: 'POST',
+                    data: { texto: textoHtml, fecha: fecha },
+                    success: function() {
+                      alert('Noticia creada correctamente.');
+                    },
+                    error: function() {
+                      alert('Error al crear archivo HTML.');
+                    }
+                  });
+                },
+                error: function() {
+                  alert('Error al subir imagen.');
+                }
+              });
+            },
+            error: function() {
+              alert('Error al crear carpeta.');
+            }
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
