@@ -1,48 +1,42 @@
-name: Generador de noticias
+name: Generar Noticias
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-
-env:
-  REPO_NAME: TIORADIO.github.io
-  BRANCH_NAME: main
+    branches: [ main ]
 
 jobs:
-  generador_noticias:
+  generar:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
-      
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm install
-      
-    - name: Create news file from template
-      env:
-        NEWS_FILE: ${{ github.event.head_commit.added | grep -m1 .html }}
-      run: |
-        mkdir -p noticias/
-        cp plantilla/plantilla.html noticias/"${NEWS_FILE}"
-        sed -i "s/Fecha de la noticia/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<fecha>).*(?=<\/fecha>)')/" noticias/"${NEWS_FILE}"
-        sed -i "s/Título de la noticia/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<titulo>).*(?=<\/titulo>)')/" noticias/"${NEWS_FILE}"
-        sed -i "s/Género de la noticia/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<genero>).*(?=<\/genero>)')/" noticias/"${NEWS_FILE}"
-        sed -i "s/Autor de la noticia/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<autor>).*(?=<\/autor>)')/" noticias/"${NEWS_FILE}"
-        sed -i "s/noticia aquí/$(cat generador/"${NEWS_FILE}" | grep -oP '(?<=<contenido>).*(?=<\/contenido>)')/" noticias/"${NEWS_FILE}"
-      
-    - name: Add, commit and push changes
-      run: |
-        git config --global user.email "you@example.com"
-        git config --global user.name "Your Name"
-        git add noticias/
-        git commit -m "Add new news file"
-        git push origin $BRANCH_NAME
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install beautifulsoup4
+
+      - name: generar noticias
+        run: |
+          for file in ${GITHUB_WORKSPACE}/generador/*.html
+          do
+            filename=$(basename -- "$file")
+            filename="${filename%.*}"
+            cp ${GITHUB_WORKSPACE}/plantilla/plantilla.html ${GITHUB_WORKSPACE}/noticias/"$filename".html
+            fecha=$(cat "$file" | grep -oP '(?<=<fecha>).*?(?=</fecha>)')
+            titulo=$(cat "$file" | grep -oP '(?<=<titulo>).*?(?=</titulo>)')
+            genero=$(cat "$file" | grep -oP '(?<=<genero>).*?(?=</genero>)')
+            autor=$(cat "$file" | grep -oP '(?<=<autor>).*?(?=</autor>)')
+            contenido=$(cat "$file" | grep -oP '(?<=<contenido>).*?(?=</contenido>)')
+            sed -i "s/Fecha de la noticia/$fecha/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+            sed -i "s/Título de la noticia/$titulo/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+            sed -i "s/Género de la noticia/$genero/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+            sed -i "s/Autor de la noticia/$autor/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+            sed -i "s/noticia aquí/$contenido/" ${GITHUB_WORKSPACE}/noticias/"$filename".html
+            echo "Noticia generada para $filename.html"
+          done
