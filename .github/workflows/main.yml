@@ -1,0 +1,31 @@
+name: Actualizar noticias
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'generador/*.html'
+
+jobs:
+  actualizar-noticias:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v2
+
+      - name: Copiar plantilla
+        run: |
+          cp plantilla/plantilla.html noticias/
+
+      - name: Leer nombre del archivo
+        id: filename
+        run: echo "::set-output name=filename::$(echo ${{ github.event_path }} | awk -F'/' '{print $NF}')"
+
+      - name: Reemplazar contenido de plantilla con datos del archivo subido
+        run: |
+          sed -i "s/Fecha de la noticia/$(cat generador/${{ steps.filename.outputs.filename }} | grep -oP '(?<=<fecha>).*(?=<\/fecha>)')/" noticias/${{ steps.filename.outputs.filename }}
+          sed -i "s/Título de la noticia/$(cat generador/${{ steps.filename.outputs.filename }} | grep -oP '(?<=<titulo>).*(?=<\/titulo>)')/" noticias/${{ steps.filename.outputs.filename }}
+          sed -i "s/Género de la noticia/$(cat generador/${{ steps.filename.outputs.filename }} | grep -oP '(?<=<genero>).*(?=<\/genero>)')/" noticias/${{ steps.filename.outputs.filename }}
+          sed -i "s/Autor de la noticia/$(cat generador/${{ steps.filename.outputs.filename }} | grep -oP '(?<=<autor>).*(?=<\/autor>)')/" noticias/${{ steps.filename.outputs.filename }}
+          sed -i "s/noticia aquí/$(cat generador/${{ steps.filename.outputs.filename }} | grep -oP '(?<=<contenido>).*(?=<\/contenido>)')/" noticias/${{ steps.filename.outputs.filename }}
