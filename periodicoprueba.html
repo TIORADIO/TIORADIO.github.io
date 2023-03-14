@@ -1,38 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Noticias</title>
-</head>
-<body>
-	<div>
-		<h2>Últimas noticias</h2>
-		<ul>
-			<?php
-				$url = 'https://api.github.com/repos/TIORADIO/TIORADIO.github.io/contents/noticias';
-				$options = array(
-					'http' => array(
-						'header' => "User-Agent: MyPhpScraper\r\n"
-					)
-				);
-				$context = stream_context_create($options);
-				$data = file_get_contents($url, false, $context);
-				$noticias = json_decode($data, true);
-
-				arsort($noticias);
-				$count = 0;
-				foreach ($noticias as $noticia) {
-					if (strpos($noticia['name'], '.html') !== false && $count < 3) {
-						$noticia_url = "https://raw.githubusercontent.com/TIORADIO/TIORADIO.github.io/main/noticias/".$noticia['name'];
-						echo "<li><a href='$noticia_url'>".$noticia['name']."</a></li>";
-						$count++;
-					}
-				}
-			?>
-		</ul>
-	</div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-	<script src="https://awakengenerador.000webhostapp.com/periodico.php"></script>
-</body>
+  <head>
+    <title>Mi Página de Noticias</title>
+  </head>
+  <body>
+    <h1>Noticias Recientes</h1>
+    <div id="noticias-container">
+      <iframe src="https://awakengenerador.000webhostapp.com/periodico.php" width="100%" height="500px" frameborder="0"></iframe>
+    </div>
+  </body>
 </html>
