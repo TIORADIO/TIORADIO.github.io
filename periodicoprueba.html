@@ -1,13 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Noticias Recientes</title>
-	<meta charset="utf-8">
+	<title>Noticias</title>
 </head>
 <body>
-	<h1>Últimas Noticias</h1>
-	<div id="noticias">
-		<?php include("noticias.php"); ?>
+	<div>
+		<h2>Últimas noticias</h2>
+		<ul>
+			<?php
+				$url = 'https://api.github.com/repos/TIORADIO/TIORADIO.github.io/contents/noticias';
+				$options = array(
+					'http' => array(
+						'header' => "User-Agent: MyPhpScraper\r\n"
+					)
+				);
+				$context = stream_context_create($options);
+				$data = file_get_contents($url, false, $context);
+				$noticias = json_decode($data, true);
+
+				arsort($noticias);
+				$count = 0;
+				foreach ($noticias as $noticia) {
+					if (strpos($noticia['name'], '.html') !== false && $count < 3) {
+						$noticia_url = "https://raw.githubusercontent.com/TIORADIO/TIORADIO.github.io/main/noticias/".$noticia['name'];
+						echo "<li><a href='$noticia_url'>".$noticia['name']."</a></li>";
+						$count++;
+					}
+				}
+			?>
+		</ul>
 	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://www.example.com/mi-archivo-php.php"></script>
 </body>
 </html>
