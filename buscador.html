@@ -1,0 +1,220 @@
+<form method="GET" action="buscar.php">
+  <label for="titulo">Buscar noticias</label>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+
+<style>
+  .topp input[type="text"] {
+  width: 300px;
+  max-width: 400px;
+  text-align: center;
+}
+
+.autor input[type="text"] {
+  width: 150px;
+  max-width: 150px;
+  font-size: 15px;
+
+}
+
+.dia input[type="number"] {
+  width: 40px;
+  max-width: 40px;
+  text-align: center;
+  font-size: 15px;
+
+}
+
+
+.ano input[type="number"] {
+  width: 60px;
+  max-width: 50px;
+  text-align: center;
+  font-size: 15px;
+
+}
+
+body {
+font-family: 'Noto Sans', sans-serif;
+  color: #fff;
+  background-color: #222;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  text-align: center;
+  background-color: transparent; /* Cambiar el color de fondo del formulario */
+  padding: 20px;
+  border-radius: 20px;
+  font-size: 15px;
+
+}
+
+label {
+  margin-right: 0px;
+
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 5px;
+  margin: 3px;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+  text-align: center;
+  background-color: #444; /* Cambiar el color de fondo de los campos de texto */
+    color: #fff; /* Cambiar el color de letra a blanco */
+    font-size: 15px;
+
+}
+
+input[type="submit"] {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: #f00;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.topp {
+  display: flex;
+  flex-direction: row;
+}
+
+.restantes {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0px 1000px;
+  
+}
+
+.autor,
+.dia,
+.mes,
+.ano,
+.genero {
+  flex: 1;
+  margin: 5px;
+}
+
+.restantes label {
+  color: #fff;
+  margin-right: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+  form {
+    width: 100%;
+  }
+
+  .restantes {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+label[for="titulo"] {
+  font-size: 30px;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+label[for="dia"] {
+  font-size: 15px;
+  margin: 0;
+  text-align: center;
+}
+  </style>
+  <div class="topp">
+  <input type="text" id="titulo" name="titulo">
+   </div>
+  <div class="restantes">
+      <div class="genero">
+    <label for="genero">Género:</label>
+  <select id="genero" name="genero">
+    <option value="">Seleccione</option>
+    <option value="salud">Salud</option>
+    <option value="deportes">Deportes</option>
+  </select>
+  </div>
+<div class="autor">
+  <label for="autor">Autor:</label>
+  <input type="text" id="autor" name="autor">
+</div>
+<div class="dia">
+  <label for="dia">Día:</label>
+    <select id="dia" name="dia">
+<option value="">Seleccione</option>
+<option value="01,">01</option>
+<option value="02,">02</option>
+<option value="03,">03</option>
+<option value="04,">04</option>
+<option value="05,">05</option>
+<option value="06,">06</option>
+<option value="07,">07</option>
+<option value="08,">08</option>
+<option value="09,">09</option>
+<option value="10,">10</option>
+<option value="11,">11</option>
+<option value="12,">12</option>
+<option value="13,">13</option>
+<option value="14,">14</option>
+<option value="15,">15</option>
+<option value="16,">16</option>
+<option value="17,">17</option>
+<option value="18,">18</option>
+<option value="19,">19</option>
+<option value="20,">20</option>
+<option value="21,">21</option>
+<option value="22,">22</option>
+<option value="23,">23</option>
+<option value="24,">24</option>
+<option value="25,">25</option>
+<option value="26,">26</option>
+<option value="27,">27</option>
+<option value="28,">28</option>
+<option value="29,">29</option>
+<option value="30,">30</option>
+<option value="31,">31</option>
+    </select>
+  </div>
+  <div class="mes">
+  <label for="mes">Mes:</label>
+  <select id="mes" name="mes">
+    <option value="">Seleccione</option>
+    <option value="Ene">Enero</option>
+    <option value="Feb">Febrero</option>
+    <option value="Mar">Marzo</option>
+    <option value="Abr">Abril</option>
+    <option value="May">Mayo</option>
+    <option value="Jun">Junio</option>
+    <option value="Jul">Julio</option>
+    <option value="Ago">Agosto</option>
+    <option value="Sep">Septiembre</option>
+    <option value="Oct">Octubre</option>
+    <option value="Nov">Noviembre</option>
+    <option value="Dic">Diciembre</option>
+  </select>
+</div>
+  <div class="ano">
+  <label for="anio">Año:</label>
+  <input type="number" id="anio" name="anio" min="1900" max="2099">
+  </div>
+</div>
+  <input type="submit" value="Buscar">
+</form>
