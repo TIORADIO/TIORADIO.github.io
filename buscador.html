@@ -1,8 +1,7 @@
-<form method="GET" id="form-buscar">
+<form id="search-form">
   <label for="titulo">Buscar noticias</label>
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
-
   <div class="topp">
     <input type="text" id="titulo" name="titulo">
   </div>
@@ -23,9 +22,9 @@
       <label for="dia">Día:</label>
       <select id="dia" name="dia">
         <option value="">Seleccione</option>
-        <option value="01,">01</option>
-        <option value="02,">02</option>
-        <option value="03,">03</option>
+        <option value="01">01</option>
+        <option value="02">02</option>
+        <option value="03">03</option>
       </select>
     </div>
     <div class="mes">
@@ -54,3 +53,15 @@
   <input type="submit" value="Buscar">
 </form>
 
+<table id="search-results" style="display:none;">
+  <thead>
+    <tr>
+      <th>Título</th>
+      <th>Autor</th>
+      <th>Fecha</th>
+      <th>Género</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
