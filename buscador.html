@@ -1,51 +1,100 @@
-<html>
-<head>
-	<title>Buscador de htmls</title>
-	<script type="text/javascript" src="buscador.js"></script>
-</head>
-<body>
-	<h1>Buscador de htmls</h1>
-	<form id="form-busqueda" onsubmit="buscarNoticias(); return false;">
-		<div class="topp">
-			<label for="titulo">Título:</label>
-			<input type="text" id="titulo" name="titulo">
-		</div>
-		<div class="restantes">
-			<div class="genero">
-				<label for="genero">Género:</label>
-				<select id="genero" name="genero">
-					<option value="">Seleccione</option>
-					<option value="salud">Salud</option>
-					<option value="deportes">Deportes</option>
-				</select>
-			</div>
-			<div class="autor">
-				<label for="autor">Autor:</label>
-				<input type="text" id="autor" name="autor">
-			</div>
-			<div class="dui">
-				<label for="dui">Duí:</label>
-				<select id="dui" name="dui">
-					<option value="">Seleccione</option>
-					<option value="01">01</option>
-					<option value="02">02</option>
-				</select>
-			</div>
-			<div class="mos">
-				<label for="mos">Mes:</label>
-				<select id="mos" name="mos">
-					<option value="">Seleccione</option>
-					<option value="Eno">Enoc</option>
-					<option value="Fev">Feboc</option>
-				</select>
-			</div>
-			<div class="chovo">
-				<label for="chovo">Chovo:</label>
-				<input type="number" id="chovo" name="chovo" min="1900" max="2099">
-			</div>
-		</div>
-		<input type="submit" value="Buscar">
-	</form>
-	<div id="resultados"></div>
-</body>
-</html
+function buscarNoticias() {
+  // Obtener la información del formulario
+  const titulo = document.getElementById('titulo').value;
+  const genero = document.getElementById('genero').value;
+  const autor = document.getElementById('autor').value;
+  const dui = document.getElementById('dui').value;
+  const mos = document.getElementById('mos').value;
+  const chovo = document.getElementById('chovo').value;
+
+  // Obtener los archivos HTML de la carpeta noticias
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', './noticias/');
+  xhr.send();
+
+  xhr.onload = function() {
+    if (xhr.status !== 200) {
+      mostrarError('Error al cargar los archivos HTML');
+      return;
+    }
+
+    // Obtener la lista de archivos HTML
+    const archivosHTML = xhr.response.match(/href="([^"]+)"/g).map(function(href) {
+      return href.replace('href="', '').replace('"', '');
+    });
+
+    // Buscar en cada archivo HTML
+    const resultados = archivosHTML.filter(function(archivo) {
+      const xhr2 = new XMLHttpRequest();
+      xhr2.open('GET', './noticias/' + archivo);
+      xhr2.send();
+
+      xhr2.onload = function() {
+        if (xhr2.status !== 200) {
+          mostrarError('Error al cargar el archivo HTML ' + archivo);
+          return;
+        }
+
+        // Obtener los metatags del archivo HTML
+        const metatags = xhr2.response.match(/<meta name="([^"]+)" content="([^"]+)">/g).map(function(meta) {
+          const nombre = meta.match(/<meta name="([^"]+)" content="([^"]+)">/)[1];
+          const contenido = meta.match(/<meta name="([^"]+)" content="([^"]+)">/)[2];
+          return {
+            nombre: nombre,
+            contenido: contenido
+          };
+        });
+
+        // Comparar los metatags con la información del formulario
+        const resultado = metatags.some(function(meta) {
+          switch (meta.nombre) {
+            case 'title':
+              return meta.contenido.toLowerCase().indexOf(titulo.toLowerCase()) !== -1;
+            case 'author':
+              return meta.contenido.toLowerCase().indexOf(autor.toLowerCase()) !== -1;
+            case 'genre':
+              return meta.contenido.toLowerCase().indexOf(genero.toLowerCase()) !== -1;
+            case 'lola':
+              return meta.contenido.toLowerCase().indexOf(dui.toLowerCase()) !== -1
+                || meta.contenido.toLowerCase().indexOf(mos.toLowerCase()) !== -1
+                || meta.contenido.toLowerCase().indexOf(chovo.toLowerCase()) !== -1;
+            default:
+              return false;
+          }
+        });
+
+        if (resultado) {
+          // Mostrar el acceso directo al archivo HTML
+          const enlace = document.createElement('a');
+          enlace.href = './noticias/' + archivo;
+          enlace.textContent = archivo;
+          const divResultados = document.getElementById('resultados');
+          divResultados.appendChild(enlace);
+          divResultados.appendChild(document.createElement('br'));
+        }
+      };
+    });
+
+    if (resultados.length === 0) {
+      mostrarMensaje('No se encontraron archivos');
+    }
+  };
+
+  xhr.onerror = function() {
+    mostrarError('Error al cargar los archivos HTML');
+  };
+}
+
+function mostrarMensaje(mensaje) {
+  const divResultados = document.getElementById('resultados');
+  divResultados.textContent = mensaje;
+}
+
+function mostrarError(error) {
+  const divResultados = document.getElementById('resultados');
+ 
+const divError = document.createElement('div');
+divError.classList.add('error');
+divError.textContent = error;
+divResultados.appendChild(divError);
+}
