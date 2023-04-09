@@ -1,67 +1,51 @@
-<form id="search-form">
-  <label for="titulo">Buscar noticias</label>
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
-  <div class="topp">
-    <input type="text" id="titulo" name="titulo">
-  </div>
-  <div class="restantes">
-    <div class="genero">
-      <label for="genero">Género:</label>
-      <select id="genero" name="genero">
-        <option value="">Seleccione</option>
-        <option value="salud">Salud</option>
-        <option value="deportes">Deportes</option>
-      </select>
-    </div>
-    <div class="autor">
-      <label for="autor">Autor:</label>
-      <input type="text" id="autor" name="autor">
-    </div>
-    <div class="dia">
-      <label for="dia">Día:</label>
-      <select id="dia" name="dia">
-        <option value="">Seleccione</option>
-        <option value="01">01</option>
-        <option value="02">02</option>
-        <option value="03">03</option>
-      </select>
-    </div>
-    <div class="mes">
-      <label for="mes">Mes:</label>
-      <select id="mes" name="mes">
-        <option value="">Seleccione</option>
-        <option value="Ene">Enero</option>
-        <option value="Feb">Febrero</option>
-        <option value="Mar">Marzo</option>
-        <option value="Abr">Abril</option>
-        <option value="May">Mayo</option>
-        <option value="Jun">Junio</option>
-        <option value="Jul">Julio</option>
-        <option value="Ago">Agosto</option>
-        <option value="Sep">Septiembre</option>
-        <option value="Oct">Octubre</option>
-        <option value="Nov">Noviembre</option>
-        <option value="Dic">Diciembre</option>
-      </select>
-    </div>
-    <div class="ano">
-      <label for="anio">Año:</label>
-      <input type="number" id="anio" name="anio" min="1900" max="2099">
-    </div>
-  </div>
-  <input type="submit" value="Buscar">
-</form>
-
-<table id="search-results" style="display:none;">
-  <thead>
-    <tr>
-      <th>Título</th>
-      <th>Autor</th>
-      <th>Fecha</th>
-      <th>Género</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+<html>
+<head>
+	<title>Buscador de htmls</title>
+	<script type="text/javascript" src="buscador.js"></script>
+</head>
+<body>
+	<h1>Buscador de htmls</h1>
+	<form id="form-busqueda" onsubmit="buscarNoticias(); return false;">
+		<div class="topp">
+			<label for="titulo">Título:</label>
+			<input type="text" id="titulo" name="titulo">
+		</div>
+		<div class="restantes">
+			<div class="genero">
+				<label for="genero">Género:</label>
+				<select id="genero" name="genero">
+					<option value="">Seleccione</option>
+					<option value="salud">Salud</option>
+					<option value="deportes">Deportes</option>
+				</select>
+			</div>
+			<div class="autor">
+				<label for="autor">Autor:</label>
+				<input type="text" id="autor" name="autor">
+			</div>
+			<div class="dui">
+				<label for="dui">Duí:</label>
+				<select id="dui" name="dui">
+					<option value="">Seleccione</option>
+					<option value="01">01</option>
+					<option value="02">02</option>
+				</select>
+			</div>
+			<div class="mos">
+				<label for="mos">Mes:</label>
+				<select id="mos" name="mos">
+					<option value="">Seleccione</option>
+					<option value="Eno">Enoc</option>
+					<option value="Fev">Feboc</option>
+				</select>
+			</div>
+			<div class="chovo">
+				<label for="chovo">Chovo:</label>
+				<input type="number" id="chovo" name="chovo" min="1900" max="2099">
+			</div>
+		</div>
+		<input type="submit" value="Buscar">
+	</form>
+	<div id="resultados"></div>
+</body>
+</html
