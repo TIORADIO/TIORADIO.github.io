@@ -1,67 +1,71 @@
-$(document).ready(function() {
-  $('#form-busqueda').submit(function(e) {
-    e.preventDefault(); // Evita que se recargue la página al enviar el formulario
-    var resultados = [];
-    var titulo = $('#titulo').val();
-    var genero = $('#genero').val();
-    var autor = $('#autor').val();
-    var dui = $('#dui').val();
-    var mos = $('#mos').val();
-    var chovo = $('#chovo').val();
-    $.ajax({
-      url: 'noticias/',
-      success: function(data) {
-        $(data).find('a').attr('href', function(i, val) {
-          if (val.match(/\.html$/)) { // Solo buscamos archivos HTML
-            $.ajax({
-              url: 'noticias/' + val,
-              success: function(htmlData) {
-                var encontrado = true;
-                $('meta[name="title"]', htmlData).each(function() {
-                  if (titulo && $(this).attr('content').toLowerCase().indexOf(titulo.toLowerCase()) === -1) {
-                    encontrado = false;
-                    return false;
-                  }
-                });
-                $('meta[name="genre"]', htmlData).each(function() {
-                  if (genero && $(this).attr('content').toLowerCase() !== genero.toLowerCase()) {
-                    encontrado = false;
-                    return false;
-                  }
-                });
-                $('meta[name="author"]', htmlData).each(function() {
-                  if (autor && $(this).attr('content').toLowerCase().indexOf(autor.toLowerCase()) === -1) {
-                    encontrado = false;
-                    return false;
-                  }
-                });
-                $('meta[name="lola"]', htmlData).each(function() {
-                  if ((dui && $(this).attr('content') !== dui) || (mos && $(this).attr('content') !== mos) || (chovo && $(this).attr('content') !== chovo)) {
-                    encontrado = false;
-                    return false;
-                  }
-                });
-                if (encontrado) {
-                  resultados.push('<a href="' + val + '">' + val + '</a>');
-                }
-              },
-              error: function() {
-                $('#resultados').html('Error al cargar el archivo ' + val);
+function buscarNoticias() {
+  // Recopilar información del formulario
+  var titulo = $('#titulo').val();
+  var genero = $('#genero').val();
+  var autor = $('#autor').val();
+  var dui = $('#dui').val();
+  var mos = $('#mos').val();
+  var chovo = $('#chovo').val();
+
+  // Crear array de resultados
+  var resultados = [];
+
+  // Buscar en cada archivo HTML de la carpeta "noticias"
+  $.ajax({
+    url: 'noticias/',
+    success: function(data) {
+      $(data).find('a:contains(".html")').each(function() {
+        var url = $(this).attr('href');
+        $.ajax({
+          url: 'noticias/' + url,
+          dataType: 'html',
+          success: function(data) {
+            var encontrado = true;
+            var metatags = $(data).filter('meta');
+            metatags.each(function() {
+              var name = $(this).attr('name');
+              var content = $(this).attr('content');
+              if (name == 'title' && contenidoNoCoincide(content, titulo)) {
+                encontrado = false;
+              }
+              if (name == 'genre' && contenidoNoCoincide(content, genero)) {
+                encontrado = false;
+              }
+              if (name == 'author' && contenidoNoCoincide(content, autor)) {
+                encontrado = false;
+              }
+              if (name == 'lola' && contenidoNoCoincide(content, dui)) {
+                encontrado = false;
+              }
+              if (name == 'lola' && contenidoNoCoincide(content, mos)) {
+                encontrado = false;
+              }
+              if (name == 'lola' && contenidoNoCoincide(content, chovo)) {
+                encontrado = false;
               }
             });
+            if (encontrado) {
+              resultados.push('<a href= noticias/' + url + '>' + url + '</a>');
+            }
+            // Mostrar resultados
+            if (resultados.length > 0) {
+              $('#resultados').html('<ul>' + resultados.join('') + '</ul>');
+            } else {
+              $('#resultados').html('No se encontraron archivos');
+            }
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            $('#resultados').html('Error: ' + errorThrown);
           }
         });
-        setTimeout(function() {
-          if (resultados.length > 0) {
-            $('#resultados').html(resultados.join('<br>'));
-          } else {
-            $('#resultados').html('No se encontraron archivos');
-          }
-        }, 1000); // Espera 1 segundo para que se completen todas las búsquedas antes de mostrar los resultados
-      },
-      error: function() {
-        $('#resultados').html('Error al cargar los archivos');
-      }
-    });
+      });
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      $('#resultados').html('Error: ' + errorThrown);
+    }
   });
-});
+}
+
+function contenidoNoCoincide(contenido, filtro) {
+  return filtro !== '' && contenido.toLowerCase().indexOf(filtro.toLowerCase()) === -1;
+}
